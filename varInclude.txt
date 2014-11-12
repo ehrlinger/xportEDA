@@ -1,0 +1,1 @@
+The censoring variable is used for shape and coloring the continuous varible plots.
