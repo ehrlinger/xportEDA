@@ -130,7 +130,7 @@ shinyServer(function(input, output) {
 
     labs <- readLabs()
 
-    print(cbind(labs))
+    #print(cbind(labs))
 
     cls<- sapply(dta.st, class)
 
@@ -141,10 +141,8 @@ shinyServer(function(input, output) {
     # We want to stay around 12 or so plots deep.
     # So, we want to calculate ncol
     ncol=round(lng/12)
-
-
-
-    print(lng)
+    if(ncol<1)ncol=1
+    #print(lng)
     xvr <- xv()
     if(is.null(xvr))return(NULL)
 
@@ -168,6 +166,9 @@ shinyServer(function(input, output) {
     dtaView
   })
 
+  seld <- reactive({
+    input$selected
+  })
   xv <- reactive({
     input$xvars
   })
@@ -192,7 +193,7 @@ shinyServer(function(input, output) {
     # We want to stay around 12 plots deep.
     # So, we want to calculate ncol
     ncol=round(lng/10)
-
+    if(ncol<1)ncol=1
     xvr <- xv()
     if(is.null(xvr))return(NULL)
 
@@ -216,6 +217,65 @@ shinyServer(function(input, output) {
     dtaView
   })
 
+  output$varPlot <- renderPlot({
+    dta <- readData()
+
+    if(is.null(dta))return(NULL)
+
+    labs <- readLabs()
+    if(is.null(labs))return(NULL)
+
+    sll <- seld()
+    if(is.null(sll))return(NULL)
+    xvr <- xv()
+    if(is.null(xvr))return(NULL)
+
+    print(sll)
+    print(xvr)
+
+    cls <- class(dta[,which(colnames(dta) == sll)])
+
+    if(cls == "numeric"){
+      cn <- cen()
+      if(is.null(cn))return(NULL)
+
+      dtaView<- ggplot(dta,
+                       aes_string(x=xvr, y=sll, color=cn, shape=cn)) +
+        geom_point(alpha=.5)+
+        labs(x=labs[xvr], y=labs[sll])+
+        scale_color_manual(values=strCol, na.value="lightgrey")+
+        scale_shape_manual(values=event.marks) +
+        theme(legend.position="none")
+
+    }else{
+      ## If we have a large range of xvar, we want to adjust the binwidths
+      rn <- range(dta[,which(colnames(dta) == xvr)], na.rm=TRUE)
+      bn <- (rn[2]-rn[1])/30
+      if(bn < .25) bn <- .25
+
+      dtaView <- ggplot(dta) +
+        geom_histogram(aes_string(x=xvr, fill=sll),
+                       alpha=.5, binwidth=bn, color="black")+
+        labs(x=labs[xvr], y=labs[sll])+
+        theme(legend.position="none")
+    }
+    dtaView
+  })
+
+  output$selectPlot <- renderUI({
+    # Look through the data...
+    labs <- readData()
+
+    # x-var should be numeric only...
+    nms <- colnames(labs)
+
+    if(is.null(labs)){
+      NULL
+    }else{
+      selectInput("selected", label="Select Plot:",
+                  choices=nms)
+    }
+  })
   output$xvars <- renderUI({
     # Look through the data...
     labs <- readData()

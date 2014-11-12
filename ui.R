@@ -32,6 +32,11 @@ shinyUI(fluidPage(
                            plotOutput('continuous', width="100%",
                                       height=900)
                   ),
+                  tabPanel("Single Variable",
+                           uiOutput("selectPlot"),
+                           hr(),
+                           plotOutput("varPlot")
+                  ),
                   tabPanel("data.frame",
                            verbatimTextOutput('contents')
                   )
