@@ -46,3 +46,20 @@ or run it in R directly from the repository:
 ```
 R> shiny::runGitHub("ehrlinger/xportEDA")
 ```
+
+## Issues and Caveats
+
+I could put the standard “use at your own risk” disclaimer here. I will also add:
+
+The app is written with my specific problem domain in mind though I am open for suggestions on how to improve it.
+
+We tend to use time to event data (working in a hospital after all).
+
+Our group uses SAS predominantly, hence the “xport” functionality and the app naming structure.
+
+xportEDA will have trouble with large p data sets, as I have not figured out how to make shiny extend the figures indefinitely down the page. I do dynamically set the number of columns in an effort to control how small the panel plots get. But if you get into the 75 categorical or continuous variable range, it may become illegible.
+
+Progress not perfection! The best way to start, is to start.
+
+## Blog article posted at:
+http://jehrlinger.wordpress.com/2014/12/10/look-its-your-data/
