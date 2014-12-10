@@ -25,3 +25,15 @@ The app creates a faceted set of histograms for all categorical and logical vari
 A separate page is set up for visualizing individual variables, making it easy to export a single figure for use in reports. 
 
 We still include a data summary for debugging purposes. 
+
+## Running the App
+The easiest way is to use the command to download the app from the [GitHub](https://github.com/ehrlinger/xportEDA) repository.
+```
+R> library(shiny)
+R> runApp()
+```
+
+or run it directly from the repository:
+```
+R> iny::runGitHub("ehrlinger/xportEDA") 
+```

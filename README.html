@@ -72,7 +72,17 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 <p>If a picture is worth a thousand words, then how many tables are a single visualization worth? <a href="http://en.wikipedia.org/wiki/Exploratory_data_analysis">Exploratory data analysis</a> is a great way to see what is and is not in your dataset. This app makes it easy to visualize your data quickly, without programming effort to get a jump on your <a href="http://en.wikipedia.org/wiki/Data_wrangling">data wrangling</a>.</p>
 <p>This simple app reads in a data.frame from a csv or SAS xpt file, and generates a set of data visualizations.</p>
 <p>The first step is to classify the variables as continuous, logical or categorical. We classify any variable with only 2 unique values as logical. We have to use an ad-hoc definition for categorical variables as all factors plus all variables with more than 2 and less than 10 unique values. By default, character variables are converted to factors, however if we have more than 20 levels, we will not show a figure for that variable.</p>
-<p>The app creates a faceted set of histograms for all categorical and logical variables, and another set of scatter plots for all continuous variables. Since I work in time-to-event settings most frequently, the app searches the variable names for a standard time related variable to use for the x-axis. Typically, we use a “date of procedure” for this.</p>
+<p>The app creates a faceted set of histograms for all categorical and logical variables, and another set of scatter plots for all continuous variables. Since I work in time-to-event settings most frequently, the app searches the variable names for a standard time related variable to use for the x-axis. Typically, we use a “date of procedure” for this. However, if your data does not have a “time” variable name, we will select the first continous variable for the x-axis. This variable can be changed though the Shiny interface.</p>
+<p>A separate page is set up for visualizing individual variables, making it easy to export a single figure for use in reports.</p>
+<p>We still include a data summary for debugging purposes.</p>
+</div>
+<div id="running-the-app" class="section level2">
+<h2>Running the App</h2>
+<p>The easiest way is to use the command to download the app from the <a href="https://github.com/ehrlinger/xportEDA">GitHub</a> repository.</p>
+<pre><code>R&gt; library(shiny)
+R&gt; runApp()</code></pre>
+<p>or run it directly from the repository:</p>
+<pre><code>R&gt; iny::runGitHub(&quot;ehrlinger/xportEDA&quot;) </code></pre>
 </div>
 </div>
 
