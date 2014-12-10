@@ -1,2 +1,1 @@
-This app will plot a data.frame from an rda (rdata), CSV or a SAS Xport dataset.
-
+An rda (rdata), CSV or a SAS Xport dataset.
