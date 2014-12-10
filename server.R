@@ -42,21 +42,34 @@ shinyServer(function(input, output) {
 
     if (is.null(inFile))
       return(NULL)
-    #print(inFile$datapath)
 
-    if(grep(".xpt", inFile)){
+    print(inFile$datapath)
+    cat(length(grep(".csv", inFile, ignore.case = TRUE)), "\n")
+    if(length(grep(".xpt", inFile,ignore.case = TRUE)) > 0){
       dta <- read.xport(inFile$datapath)
+    }else if(length(grep(".csv", inFile, ignore.case = TRUE)) > 0){
+      dta <- read.csv(inFile$datapath)
     }else{
-      dta <- read.csv(inFile$datapath, header=input$header, sep=input$sep,
-                      quote=input$quote)
+
+      # Try to load this file as an rdata file
+      load(inFile$datapath, envir="dta")
+      ## Need to look for a data.frame is dta is a list
+      if(!is.null(dta) | !is.data.frame(dta)){
+        warning("This rda file is not a data.frame.")
+        warning("I am a coward, and I refuse to guess what to do with this.")
+        return(NULL)
+      }
     }
 
-    ### R is case sensative.
+    #cat(dim(dta), "\n")
+    ### R is case sensitive.
+    dta <- data.frame(dta)
     colnames(dta)<- tolower(colnames(dta))
 
     # Drop missing value binary variables ("ms_*")
     rmcols <-c(which(colnames(dta) == "id"),
                which(colnames(dta) == "ccfid"),
+               which(colnames(dta) == "ptnum"),
                which(colnames(dta) == "ptname"),
                which(colnames(dta) == "indicate"),
                grep("ms_", colnames(dta)),
@@ -82,15 +95,34 @@ shinyServer(function(input, output) {
     }
     for(ind in 1:dim(dta)[2]){
       if(!is.factor(dta[,ind]) & !is.logical(dta[,ind]))
-        if(length(unique(dta[which(!is.na(dta[,ind])),ind]))<=6) {
+        # This 10 should be user selectable.... changeable.
+        if(length(unique(dta[which(!is.na(dta[,ind])),ind]))<=10) {
           dta[,ind] <- factor(dta[,ind])
         }
     }
 
-    dta
+
+    cls <- sapply(dta, class)
+
+    if(length(which(cls=="integer")) > 0){
+      for(ind in which(cls=="integer"))
+        dta[,ind] <-as.numeric(dta[,ind])
+    }
+
+    if(length(grep("date",colnames(dta)))>0){
+      for(ind in grep("date",colnames(dta))){
+        if(length(grep(".xpt", inFile,ignore.case = TRUE)) > 0){
+          dta[,ind] <- as.Date(dta[,ind], origin="1960-01-01")
+        }else{
+          dta[,ind] <- as.Date(dta[,ind])
+        }
+
+      }
+    }
+    return(dta)
   })
 
-  output$xvar <- reactive({
+  r <- reactive({
     #dta <- readData()
     labs <- readLabs()
     labs
@@ -100,24 +132,39 @@ shinyServer(function(input, output) {
 
     inFile <- input$file1
 
-    if (is.null(inFile) | !grep(".xpt", inFile))
+    if (is.null(inFile))
       return(NULL)
 
-    dta <- lookup.xport(inFile$datapath)
+    if(length(grep(".xpt", inFile,ignore.case = TRUE)) > 0){
+      dta <- lookup.xport(inFile$datapath)
 
-    nms <- tolower(dta[[1]]$name)
-    # Pull out the labels, and name them such that they are
-    # the same as the dta set.
-    dta.labels <- dta[[1]]$label
+      nms <- tolower(dta[[1]]$name)
+      # Pull out the labels, and name them such that they are
+      # the same as the dta set.
+      dta.labels <- dta[[1]]$label
 
-    ## Fill in empty labels with the variable name
-    dta.labels<-sapply(1:length(dta.labels), function(ind){
-      if(dta.labels[ind] == "")
-        nms[ind]
-      else
-        dta.labels[ind]
-    })
+      ## Fill in empty labels with the variable name
+      dta.labels<-sapply(1:length(dta.labels), function(ind){
+        if(dta.labels[ind] == "")
+          nms[ind]
+        else
+          dta.labels[ind]
+      })
+    }else if(length(grep(".csv", inFile, ignore.case = TRUE)) > 0){
+      dta <- read.csv(inFile$datapath)
+      dta.labels <- nms <- tolower(colnames(dta))
+    }else{
 
+      # Try to load this file as an rdata file
+      load(inFile$datapath, envir="dta")
+      ## Need to look for a data.frame is dta is a list
+      if(!is.null(dta) | !is.data.frame(dta)){
+        warning("This rda file is not a data.frame.")
+        warning("I am a coward, and I refuse to guess what to do with this.")
+        dta.labels <- nms <- NULL
+      }
+      dta.labels <- nms <- tolower(colnames(dta))
+    }
     ## For indexing the labels
     names(dta.labels) = nms
     dta.labels
@@ -129,6 +176,7 @@ shinyServer(function(input, output) {
     if(is.null(dta.st)) return(NULL)
 
     labs <- readLabs()
+    if(is.null(labs)) labs <- colnames(dta.st)
 
     #print(cbind(labs))
 
@@ -136,7 +184,7 @@ shinyServer(function(input, output) {
 
     # Somehow determine the number of vars, so we can size
     # the plot reasonably.
-    lng <- length(which(cls != "numeric"))
+    lng <- length(which(cls != "numeric" & cls != "Date"))
 
     # We want to stay around 12 or so plots deep.
     # So, we want to calculate ncol
@@ -151,13 +199,23 @@ shinyServer(function(input, output) {
     bn <- (rn[2]-rn[1])/30
     if(bn < .25) bn <- .25
 
-    dta.tmp<-dta.st[,c(which(cls != "numeric"),
+    dta.tmp<-dta.st[,c(which(cls != "numeric" & cls != "Date"),
                        which(colnames(dta.st) == xvr))]
+
+    # Want to drop variables with more than 20 factors
+    # Again user modifiable?
+    fc.cnt <- sapply(dta.tmp, function(cl)(if(is.factor(cl)){
+      length(levels(cl)) > 20
+    }else{
+      FALSE
+    }
+    ))
+    dta.tmp <- dta.tmp[,-which(fc.cnt)]
     suppressWarnings(plt.dta <- melt(dta.tmp, id=xvr))
 
     dtaView <- ggplot(plt.dta) +
       geom_histogram(aes_string(x=xvr, fill='value'),
-                     alpha=.5, binwidth=bn, color="black")+
+                     binwidth=bn, color="black")+# alpha slider?
       labs(x=labs[xvr], y="")+
       facet_wrap(~variable, ncol=ncol)+
       # scale_fill_brewer(palette="Set1", na.value="lightgrey")+
@@ -169,6 +227,7 @@ shinyServer(function(input, output) {
   seld <- reactive({
     input$selected
   })
+
   xv <- reactive({
     input$xvars
   })
@@ -188,7 +247,7 @@ shinyServer(function(input, output) {
 
     # Somehow determine the number of vars, so we can size
     # the plot reasonably.
-    lng <- length(which(cls == "numeric"))
+    lng <- length(which(cls == "numeric" | cls == "Date"))
 
     # We want to stay around 12 plots deep.
     # So, we want to calculate ncol
@@ -201,19 +260,31 @@ shinyServer(function(input, output) {
     if(is.null(cn))return(NULL)
     #print(cn)
 
-    dta.tmp<-dta.st[,c(which(cls == "numeric"),
+    dta.tmp<-dta.st[,c(which(cls == "numeric"),which(cls == "Date"),
                        which(colnames(dta.st) == cn))]
     suppressWarnings(plt.dta <- melt(dta.tmp, id=c(xvr, cn)))
 
     dtaView<- ggplot(plt.dta,
                      aes_string(x=xvr, y='value', color=cn, shape=cn)) +
-      geom_point(alpha=.5)+
+      geom_point()+ # alpha slider?
       labs(x=labs[xvr], y="")+
       facet_wrap(~variable,scales = "free_y", ncol=ncol)+
-      scale_color_manual(values=strCol, na.value="lightgrey")+
-      scale_shape_manual(values=event.marks) +
       theme(legend.position="none")
 
+
+    if(is.logical(plt.dta[,cn])){
+      dtaView <- dtaView +
+        scale_color_manual(values=strCol, na.value="lightgrey")+
+        scale_shape_manual(values=event.marks)
+    }else{
+      cnt <- length(levels(plt.dta[,cn]))
+
+      # We have to choose a palette with at least cnt colors.
+      if(cnt<= 12){
+        dtaView <- dtaView +
+          scale_color_brewer(palette="Set3", na.value="lightgrey")
+      }
+    }
     dtaView
   })
 
@@ -230,8 +301,8 @@ shinyServer(function(input, output) {
     xvr <- xv()
     if(is.null(xvr))return(NULL)
 
-    print(sll)
-    print(xvr)
+#     print(sll)
+#     print(xvr)
 
     cls <- class(dta[,which(colnames(dta) == sll)])
 
@@ -241,12 +312,22 @@ shinyServer(function(input, output) {
 
       dtaView<- ggplot(dta,
                        aes_string(x=xvr, y=sll, color=cn, shape=cn)) +
-        geom_point(alpha=.5)+
-        labs(x=labs[xvr], y=labs[sll])+
-        scale_color_manual(values=strCol, na.value="lightgrey")+
-        scale_shape_manual(values=event.marks) +
-        theme(legend.position="none")
+        geom_point()+# alpha slider?
+        labs(x=labs[xvr], y=labs[sll])
 
+      if(is.logical(dta[,cn])){
+        dtaView <- dtaView +
+          scale_color_manual(values=strCol, na.value="lightgrey")+
+          scale_shape_manual(values=event.marks)
+      }else{
+        cnt <- length(levels(dta[,cn]))
+
+        # We have to choose a palette with at least cnt colors.
+        if(cnt<= 12){
+          dtaView <- dtaView +
+            scale_color_brewer(palette="Set3", na.value="lightgrey")
+        }
+      }
     }else{
       ## If we have a large range of xvar, we want to adjust the binwidths
       rn <- range(dta[,which(colnames(dta) == xvr)], na.rm=TRUE)
@@ -255,9 +336,8 @@ shinyServer(function(input, output) {
 
       dtaView <- ggplot(dta) +
         geom_histogram(aes_string(x=xvr, fill=sll),
-                       alpha=.5, binwidth=bn, color="black")+
-        labs(x=labs[xvr], y=labs[sll])+
-        theme(legend.position="none")
+                       binwidth=bn, color="black")+ # alpha slider?
+        labs(x=labs[xvr], y=labs[sll])
     }
     dtaView
   })
@@ -276,6 +356,7 @@ shinyServer(function(input, output) {
                   choices=nms)
     }
   })
+
   output$xvars <- renderUI({
     # Look through the data...
     labs <- readData()
@@ -301,7 +382,7 @@ shinyServer(function(input, output) {
 
     # Somehow determine the number of vars, so we can size
     # the plot reasonably.
-    lng <- which(cls == "logical")
+    lng <- which(cls == "logical" | cls == "factor" )
 
     # censor should be logical only...
     cens <- colnames(labs)[lng]
@@ -326,7 +407,7 @@ shinyServer(function(input, output) {
         selectInput("xvars", label="X-axis variable:",
                     choices=nms,
                     selected=sl),
-        selectInput("censor", label="censor variables:",
+        selectInput("censor", label="Event variable:",
                     choices=cens,
                     selected=csl),
         includeText("varInclude.txt")

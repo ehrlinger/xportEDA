@@ -1,2 +1,2 @@
-This app will plot your SAS Xport dataset.
+This app will plot a data.frame from an rda (rdata), CSV or a SAS Xport dataset.
 

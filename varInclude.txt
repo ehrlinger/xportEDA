@@ -1,1 +1,2 @@
-The censoring variable is used for shape and coloring the continuous varible plots.
+
+The "event" variable is a logical value used for shape and color in all continuous variable plots.

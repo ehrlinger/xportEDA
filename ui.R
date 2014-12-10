@@ -12,11 +12,9 @@ shinyUI(fluidPage(
   sidebarLayout(
     sidebarPanel(
       includeText("fileInclude.txt"),
-      fileInput('file1', 'Choose Data File (.xpt file)',
-                accept=c('.xpt'))
-#       , 'text/csv',
-#                          'text/comma-separated-values,text/plain',
-#                          '.csv'))
+      fileInput('file1', 'Choose Data File:',
+                accept=c('.xpt',
+                         '.csv', 'rda'))
       ,
 
       # Only show this panel if the plot type is a histogram
@@ -24,11 +22,11 @@ shinyUI(fluidPage(
     ),
     mainPanel(
       tabsetPanel(type = "tabs",
-                  tabPanel("Categorical",
+                  tabPanel("Categorical Panel",
                            plotOutput('categorical', width="100%",
                                       height=900)
                   ),
-                  tabPanel("Continuous",
+                  tabPanel("Continuous Panel",
                            plotOutput('continuous', width="100%",
                                       height=900)
                   ),
@@ -37,7 +35,7 @@ shinyUI(fluidPage(
                            hr(),
                            plotOutput("varPlot")
                   ),
-                  tabPanel("data.frame",
+                  tabPanel("data.frame Summary",
                            verbatimTextOutput('contents')
                   )
       )
