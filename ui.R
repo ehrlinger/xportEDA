@@ -23,7 +23,7 @@ shinyUI(fluidPage(
     mainPanel(
       tabsetPanel(type = "tabs",
                   tabPanel("About",
-                           includeMarkdown("./README.Rmd")
+                           includeMarkdown("README.md")
                   ),
                   tabPanel("Categorical Panel",
                            plotOutput('categorical', width="100%",
