@@ -14,26 +14,35 @@ Written in [R](http://cran.r-project.org/), this shiny app requires the followin
   * RColorBrewer
 
 ## Description
-If a picture is worth a thousand words, then how many tables are a single visualization worth? [Exploratory data analysis](http://en.wikipedia.org/wiki/Exploratory_data_analysis) is a great way to see what is and is not in your dataset. This app makes it easy to visualize your data quickly, without programming effort to get a jump on your [data wrangling](http://en.wikipedia.org/wiki/Data_wrangling).
+If a picture is worth a thousand words, then how many tables are a single visualization worth? [Exploratory data analysis](http://en.wikipedia.org/wiki/Exploratory_data_analysis) is a great way to see what is and is not in your dataset.
+The xportEDA app makes it easy to visualize your data quickly, without requiring programming effort to get a jump on your data wrangling.
 
-This simple app reads in a data.frame from a csv or SAS xpt file, and generates a set of data visualizations. 
+You supply the app with a data file. The app can read in a data.frame from a SAS xpt, csv or rdata file, and generates a set of data visualizations.
 
-The first step is to classify the variables as continuous, logical or categorical. We classify any variable with only 2 unique values as logical. We have to use an ad-hoc definition for categorical variables as all factors plus all variables with more than 2 and less than 10 unique values. By default, character variables are converted to factors, however if we have more than 20 levels, we will not show a figure for that variable.
+The app first classifies the variables as continuous, logical or categorical. Any variable with only 2 unique values is interpreted as logical. An ad-hoc definition for categorical variables is any factor plus any variable with more than 2 and less than 10 unique values. By default, character variables are converted to factors, however if we have more than 20 levels, we will not show a panel figure for that variable.
 
-The app creates a faceted set of histograms for all categorical and logical variables, and another set of scatter plots for all continuous variables. Since I work in time-to-event settings most frequently, the app searches the variable names for a standard time related variable to use for the x-axis. Typically, we use a "date of procedure" for this. However, if your data does not have a "time" variable name, we will select the first continous variable for the x-axis. This variable can be changed though the Shiny interface.
+The app creates a faceted set of histograms for all categorical and logical variables, and another set of scatter plots for all continuous variables. Since we often are working in time-to-event settings, the app searches the variable names for some of our “standard” time related variable names to use for the x-axis. Typically, we use a “date of procedure” for this. However, if your data does not have a “time” variable name, we will select the first continuous variable for the x-axis. This variable can be changed though the Shiny interface.
 
-A separate page is set up for visualizing individual variables, making it easy to export a single figure for use in reports. 
+A separate page is set up for visualizing individual variables, making it easy to export a single figure for use in reports or other communications. Useful for when your collaborators do not believe you are missing large chunks of data in a variable, or there are negative values for strictly positive variables, like height.
 
-We still include a data summary for debugging purposes. 
+We also include a data summary page for further data debugging purposes.
 
 ## Running the App
-The easiest way is to use the command to download the app from the [GitHub](https://github.com/ehrlinger/xportEDA) repository.
+To try it out, you can see it on the shinapps.io site
+https://ehrlinger.shinyapps.io/xportEDA/
+
+I have also posted the app code to a GitHub repository where you can download it, and try it out. Let me know how it goes, report bugs or contribute back. I’d love to make this better, and learn more Shiny tricks along the way.
+
+The easiest way is to run the app locally is to download it from the https://github.com/ehrlinger/xportEDA repository.
+
+Then run it from R
 ```
 R> library(shiny)
 R> runApp()
 ```
 
-or run it directly from the repository:
+or run it in R directly from the repository:
+
 ```
-R> iny::runGitHub("ehrlinger/xportEDA") 
+R> shiny::runGitHub("ehrlinger/xportEDA")
 ```

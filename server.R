@@ -1,4 +1,4 @@
-
+#
 # This is the server logic for a Shiny web application.
 # You can find out more about building applications with Shiny here:
 #
@@ -204,13 +204,17 @@ shinyServer(function(input, output) {
 
     # Want to drop variables with more than 20 factors
     # Again user modifiable?
-    fc.cnt <- sapply(dta.tmp, function(cl)(if(is.factor(cl)){
+    fc.cnt <- apply(dta.tmp, 2, function(cl)(if(is.factor(cl)){
       length(levels(cl)) > 20
     }else{
       FALSE
     }
     ))
-    dta.tmp <- dta.tmp[,-which(fc.cnt)]
+
+    if(sum(fc.cnt) > 0)
+      dta.tmp <- dta.tmp[,-which(fc.cnt)]
+
+    print(colnames(dta.tmp))
     suppressWarnings(plt.dta <- melt(dta.tmp, id=xvr))
 
     dtaView <- ggplot(plt.dta) +
@@ -301,8 +305,8 @@ shinyServer(function(input, output) {
     xvr <- xv()
     if(is.null(xvr))return(NULL)
 
-#     print(sll)
-#     print(xvr)
+    #     print(sll)
+    #     print(xvr)
 
     cls <- class(dta[,which(colnames(dta) == sll)])
 
