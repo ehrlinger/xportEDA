@@ -8,10 +8,11 @@ This is a [Shiny](http://shiny.rstudio.com/) app that generates graphics used to
 Written in [R](http://cran.r-project.org/), this shiny app requires the following packages:
 
   * shiny
-  * foreign (if you want to load SAS xport files)
+  * foreign (to load SAS xport files)
   * ggplot2 
   * reshape2
   * RColorBrewer
+  * markdown (maybe?)
 
 ## Description
 If a picture is worth a thousand words, then how many tables are a single visualization worth? [Exploratory data analysis](http://en.wikipedia.org/wiki/Exploratory_data_analysis) is a great way to see what is and is not in your dataset.
