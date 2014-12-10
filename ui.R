@@ -6,6 +6,7 @@
 #
 
 library(shiny)
+library(markdown) # for shinyapps.io deployment
 
 shinyUI(fluidPage(
   titlePanel("Exploratory Data Analysis"),
