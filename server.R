@@ -417,6 +417,7 @@ shinyServer(function(input, output) {
                     choices=cens,
                     selected=csl),
         includeText("varInclude.txt")
+
       )
     }
   })

@@ -1,2 +1,3 @@
 
-The "event" variable is a logical value used for shape and color in all continuous variable plots.
+The "event" variable is a logical value used for shape and color in all continuous variable plots.  
+
