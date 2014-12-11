@@ -22,7 +22,9 @@ You supply the app with a data file. The app can read in a data.frame from a SAS
 
 The app first classifies the variables as continuous, logical or categorical. Any variable with only 2 unique values is interpreted as logical. An ad-hoc definition for categorical variables is any factor plus any variable with more than 2 and less than 10 unique values. By default, character variables are converted to factors, however if we have more than 20 levels, we will not show a panel figure for that variable.
 
-The app creates a faceted set of histograms for all categorical and logical variables, and another set of scatter plots for all continuous variables. Since we often are working in time-to-event settings, the app searches the variable names for some of our “standard” time related variable names to use for the x-axis. Typically, we use a “date of procedure” for this. However, if your data does not have a “time” variable name, we will select the first continuous variable for the x-axis. This variable can be changed though the Shiny interface.
+Since we often are working in time-to-event settings, the app searches the variable names for some of our “standard” time related variable names to use for the x-axis. Typically, we use a “date of procedure” for this. However, if your data does not have a “time” variable name, we will select the first continuous variable for the x-axis. This variable can be changed though the Shiny interface. 
+
+The app creates a faceted set of histograms for all categorical and logical variables, and another set of scatter plots for all continuous variables. For continuous variables, we also indicate missing values with rug marks at the bottom of each panel. 
 
 A separate page is set up for visualizing individual variables, making it easy to export a single figure for use in reports or other communications. Useful for when your collaborators do not believe you are missing large chunks of data in a variable, or there are negative values for strictly positive variables, like height.
 

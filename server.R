@@ -222,7 +222,7 @@ shinyServer(function(input, output) {
                      binwidth=bn, color="black")+# alpha slider?
       labs(x=labs[xvr], y="")+
       facet_wrap(~variable, ncol=ncol)+
-      # scale_fill_brewer(palette="Set1", na.value="lightgrey")+
+      #scale_fill_manual(na.value="lightgrey")+
       theme(legend.position="none")
 
     dtaView
@@ -272,6 +272,7 @@ shinyServer(function(input, output) {
                      aes_string(x=xvr, y='value', color=cn, shape=cn)) +
       geom_point()+ # alpha slider?
       labs(x=labs[xvr], y="")+
+      geom_rug(aes_string(x=xvr), data=plt.dta[which(is.na(plt.dta$value)),], color="black")+
       facet_wrap(~variable,scales = "free_y", ncol=ncol)+
       theme(legend.position="none")
 
@@ -317,6 +318,7 @@ shinyServer(function(input, output) {
       dtaView<- ggplot(dta,
                        aes_string(x=xvr, y=sll, color=cn, shape=cn)) +
         geom_point()+# alpha slider?
+        geom_rug(aes_string(x=xvr), data=dta[which(is.na(dta[,sll])),], color="black")+
         labs(x=labs[xvr], y=labs[sll])
 
       if(is.logical(dta[,cn])){
