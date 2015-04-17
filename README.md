@@ -9,6 +9,7 @@ Written in [R](http://cran.r-project.org/), this shiny app requires the followin
 
   * shiny
   * foreign (to load SAS xport files)
+  * haven (to load SAS binary files .sas7bdat)
   * ggplot2 
   * reshape2
   * RColorBrewer
@@ -18,7 +19,7 @@ Written in [R](http://cran.r-project.org/), this shiny app requires the followin
 If a picture is worth a thousand words, then how many tables are a single visualization worth? [Exploratory data analysis](http://en.wikipedia.org/wiki/Exploratory_data_analysis) is a great way to see what is and is not in your dataset.
 The xportEDA app makes it easy to visualize your data quickly, without requiring programming effort to get a jump on your data wrangling.
 
-You supply the app with a data file. The app can read in a data.frame from a SAS xpt, csv or rdata file, and generates a set of data visualizations.
+You supply the app with a data file. The app can read in a data.frame from a SAS xpt, SAS sas7bdat, csv or rdata file, and generates a set of data visualizations.
 
 The app first classifies the variables as continuous, logical or categorical. Any variable with only 2 unique values is interpreted as logical. An ad-hoc definition for categorical variables is any factor plus any variable with more than 2 and less than 10 unique values. By default, character variables are converted to factors, however if we have more than 20 levels, we will not show a panel figure for that variable.
 

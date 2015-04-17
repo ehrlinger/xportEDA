@@ -7,6 +7,8 @@
 library(shiny)
 library(foreign)
 library(ggplot2)
+library(haven)
+#library(readxl)
 #library(dplyr)
 library(reshape2)
 library(RColorBrewer)
@@ -44,17 +46,35 @@ shinyServer(function(input, output) {
       return(NULL)
 
     print(inFile$datapath)
+
     cat(length(grep(".csv", inFile, ignore.case = TRUE)), "\n")
     if(length(grep(".xpt", inFile,ignore.case = TRUE)) > 0){
       dta <- read.xport(inFile$datapath)
     }else if(length(grep(".csv", inFile, ignore.case = TRUE)) > 0){
       dta <- read.csv(inFile$datapath)
-    }else{
+    }else if(length(grep(".sas7bdat", inFile, ignore.case = TRUE)) > 0){
+      dta <- data.frame(read_sas(inFile$datapath))
+      ## Need to look for a data.frame is dta is a list
+      if(is.null(dta) | !is.data.frame(dta)){
+        warning("This sas file is not a data.frame.")
+        warning("I am a coward, and I refuse to guess what to do with this.")
+        return(NULL)
+      }
 
+#     }else if(length(grep(".xls", inFile, ignore.case = TRUE)) > 0){
+#       dta <- data.frame(read_excel(inFile$datapath))
+#       ## Need to look for a data.frame is dta is a list
+#       if(is.null(dta) | !is.data.frame(dta)){
+#         warning("This xcel file is not a data.frame.")
+#         warning("I am a coward, and I refuse to guess what to do with this.")
+#         return(NULL)
+#       }
+
+    }else{
       # Try to load this file as an rdata file
       load(inFile$datapath, envir="dta")
       ## Need to look for a data.frame is dta is a list
-      if(!is.null(dta) | !is.data.frame(dta)){
+      if(is.null(dta) | !is.data.frame(dta)){
         warning("This rda file is not a data.frame.")
         warning("I am a coward, and I refuse to guess what to do with this.")
         return(NULL)
@@ -150,21 +170,11 @@ shinyServer(function(input, output) {
         else
           dta.labels[ind]
       })
-    }else if(length(grep(".csv", inFile, ignore.case = TRUE)) > 0){
-      dta <- read.csv(inFile$datapath)
-      dta.labels <- nms <- tolower(colnames(dta))
     }else{
-
-      # Try to load this file as an rdata file
-      load(inFile$datapath, envir="dta")
-      ## Need to look for a data.frame is dta is a list
-      if(!is.null(dta) | !is.data.frame(dta)){
-        warning("This rda file is not a data.frame.")
-        warning("I am a coward, and I refuse to guess what to do with this.")
-        dta.labels <- nms <- NULL
-      }
+      dta <- readData()
       dta.labels <- nms <- tolower(colnames(dta))
     }
+
     ## For indexing the labels
     names(dta.labels) = nms
     dta.labels

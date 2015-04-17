@@ -1,1 +1,1 @@
-An rda (rdata), CSV or a SAS Xport dataset.
+An rda (.rda, .rdata), CSV (.csv), SAS Xport (.xpt) or a sas binary (.sas7bdat) dataset.
