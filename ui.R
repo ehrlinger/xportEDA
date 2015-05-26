@@ -15,8 +15,8 @@ shinyUI(fluidPage(
       includeText("fileInclude.txt"),
       fileInput('file1', 'Choose Data File:',
                 accept=c('.xpt',
-                         '.csv', 'rda', 'xls',
-                         'xlsx', 'sas7bdat'))
+                         '.csv', '.rda', '.xls',
+                         '.xlsx', '.sas7bdat'))
       ,
 
       # Only show this panel if the plot type is a histogram
