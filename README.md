@@ -1,5 +1,6 @@
 Look! It's your data!
 ======
+![active](http://www.repostatus.org/badges/latest/active.svg)
 
 ## A shiny app for data visualization
 
