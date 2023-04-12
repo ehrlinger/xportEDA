@@ -17,7 +17,7 @@ Written in [R](http://cran.r-project.org/), this shiny app requires the followin
   * markdown (maybe?)
 
 ## Description
-If a picture is worth a thousand words, then how many tables are a single visualization worth? [Exploratory data analysis](http://en.wikipedia.org/wiki/Exploratory_data_analysis) is a great way to see what is and is not in your dataset.
+If a picture is worth a thousand words, then how many tables are a single visualization worth? [Exploratory data analysis](http://en.wikipedia.org/wiki/Exploratory_data_analysis) is a great way to see what is and is not in your data set.
 The xportEDA app makes it easy to visualize your data quickly, without requiring programming effort to get a jump on your data wrangling.
 
 You supply the app with a data file. The app can read in a data.frame from a SAS xpt, SAS sas7bdat, csv or rdata file, and generates a set of data visualizations.
@@ -33,7 +33,7 @@ A separate page is set up for visualizing individual variables, making it easy t
 We also include a data summary page for further data debugging purposes.
 
 ## Running the App
-To try it out, you can see it on the shinapps.io site
+To try it out, you can see it on the shinyapps.io site
 https://ehrlinger.shinyapps.io/xportEDA/
 
 I have also posted the app code to a GitHub repository where you can download it, and try it out. Let me know how it goes, report bugs or contribute back. I’d love to make this better, and learn more Shiny tricks along the way.
